@@ -1,96 +1,97 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ config('app.name', 'نظام إدارة الصيدلية والعيادة') }}</title>
-    
-    <!-- Tailwind CSS -->
+
+    <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
-
-    <!-- سكريبت الفحص السريع لمنع وميض الشاشة عند التنقل بين الصفحات -->
     <script>
-        (function() {
-            const savedTheme = localStorage.getItem('app_theme') || 'dark';
-            let isDark = true;
-
-            if (savedTheme === 'dark') {
-                isDark = true;
-            } else if (savedTheme === 'light') {
-                isDark = false;
-            } else if (savedTheme === 'auto') {
-                const hour = new Date().getHours();
-                isDark = (hour < 6 || hour >= 18);
-            }
-
-            if (isDark) {
-                document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
-            } else {
-                document.documentElement.classList.add('light');
-                document.documentElement.classList.remove('dark');
-            }
-        })();
+        tailwind.config = {
+            darkMode: 'class',
+        }
     </script>
 
-  <style>
-    /* 1. خلفية الصفحة بالوضع الفاتح (رمادي متباين ليبرز اللون الأبيض) */
-    body:not(.dark) {
-        background-color: #e2e8f0 !important; 
-        color: #0f172a !important;
-    }
+    <!-- سكربت الفحص السريع لمنع وميض الشاشة عند التنقل -->
+   <!-- سكربت الفحص السريع لمنع وميض الشاشة عند التنقل -->
+<script>
+    (function() {
+        const savedTheme = localStorage.getItem('app_theme') || 'auto';
+        let isDark = false;
 
-    /* 2. إجبار الحدود (Border) والظل (Shadow) على كل الكروت */
-    body:not(.dark) div[class*="rounded-"] {
-        background-color: #ffffff !important;
-        border: 2px solid #cbd5e1 !important; /* ستروك واضح بحدود 2px */
-        box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.15), 0 8px 10px -6px rgba(0, 0, 0, 0.1) !important;
-    }
+        if (savedTheme === 'dark') {
+            isDark = true;
+        } else if (savedTheme === 'light') {
+            isDark = false;
+        } else if (savedTheme === 'auto') {
+            // التلقائي حسب الوقت: من 6 صباحاً (6) إلى قبل 6 مساءً (18) يكون فاتح، عدا ذلك يكون داكن
+            const currentHour = new Date().getHours();
+            isDark = (currentHour < 6 || currentHour >= 18);
+        }
 
-    /* 3. استثناء الأزرار والـ Badges الصغار من الستروك السميك */
-    body:not(.dark) button,
-    body:not(.dark) a,
-    body:not(.dark) span[class*="rounded-"] {
-        border: none !important;
-    }
+        if (isDark) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    })();
+</script>
 
-    /* 4. تعديل ألوان النصوص لتبدو حادة وواضحة */
-    body:not(.dark) h1, body:not(.dark) h2, body:not(.dark) h3, body:not(.dark) h4,
-    body:not(.dark) .text-slate-100 {
-        color: #0f172a !important;
-    }
-
-    body:not(.dark) p, body:not(.dark) .text-slate-400, body:not(.dark) .text-slate-300 {
-        color: #475569 !important;
-    }
-</style>
+    <style>
+        html {
+            transition: background-color 0.2s ease, color 0.2s ease;
+        }
+        .theme-btn-active {
+            border-color: #3b82f6 !important;
+            background-color: rgba(59, 130, 246, 0.15) !important;
+            color: #60a5fa !important;
+        }
+    </style>
 </head>
 
-<body class="min-h-screen flex flex-col bg-slate-950 text-slate-100">
+<body class="min-h-screen flex flex-col bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
 
-    <!-- الشريط العلوي الموحد (الهيدر) -->
-    <header class="bg-slate-900 border-b border-slate-800 px-6 py-4 flex items-center justify-between">
+    <!-- الشريط العلوي (الهيدر) -->
+    <header class="bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm">
         
-        <!-- اسم النظام والعنوان يمين -->
-        <div class="flex items-center gap-2 text-xl font-bold text-slate-100">
+        <!-- اسم النظام والعنوان -->
+        <div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
             <span>💊</span>
             <span>نظام إدارة الصيدلية والعيادة</span>
         </div>
 
-        <!-- الأزرار يسار (الرئيسية + تسجيل الخروج) -->
-        <div class="flex items-center gap-3">
-            <a href="{{ route('home') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                🏡 الواجهة الرئيسية
-            </a>
-
-            <form action="{{ route('logout') }}" method="POST" class="inline">
-                @csrf
-                <button type="submit" class="bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 border border-rose-500/30 px-4 py-2 rounded-xl text-xs font-bold transition flex items-center gap-1">
-                    🚪 تسجيل الخروج
+        <!-- أزرار التحكم بالمظهر والأزرار العامة -->
+        <div class="flex items-center gap-4">
+            
+            <!-- أزرار تبديل الثيم الثلاثية (فاتح / تلقائي / داكن) -->
+            <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
+                <button id="theme-light-btn" onclick="setTheme('light')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
+                    🌞 فاتح
                 </button>
-            </form>
-        </div>
+                <button id="theme-auto-btn" onclick="setTheme('auto')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
+                    ⏰ تلقائي
+                </button>
+                <button id="theme-dark-btn" onclick="setTheme('dark')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
+                    🌙 داكن
+                </button>
+            </div>
 
+            <!-- أزرار الواجهة الرئيسية وتسجيل الخروج -->
+            <div class="flex items-center gap-2">
+                <a href="{{ route('home') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
+                    🏡 الواجهة الرئيسية
+                </a>
+
+                <form action="{{ route('logout') }}" method="POST" class="inline">
+                    @csrf
+                    <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
+                        🚪 تسجيل الخروج
+                    </button>
+                </form>
+            </div>
+
+        </div>
     </header>
 
     <!-- محتوى الصفحات المتغير -->
@@ -98,30 +99,27 @@
         @yield('content')
     </main>
 
-    <!-- الفوتر البسيط -->
-    <footer class="text-center text-xs text-slate-600 py-4 border-t border-slate-900">
+    <!-- الفوتر -->
+    <footer class="text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-800">
         جميع الحقوق محفوظة &copy; {{ date('Y') }} - نظام إدارة الصيدلية والعيادة
     </footer>
 
-    <!-- سكريبت التحكم بالمظهر وقراءة الزر المحدد -->
+    <!-- سكربت إدارة الثيم التفاعلي -->
     <script>
         function applyTheme(theme) {
-            let isDark = true;
+            let isDark = false;
 
             if (theme === 'dark') {
                 isDark = true;
             } else if (theme === 'light') {
                 isDark = false;
             } else if (theme === 'auto') {
-                const hour = new Date().getHours();
-                isDark = (hour < 6 || hour >= 18);
+                isDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
             }
 
             if (isDark) {
                 document.documentElement.classList.add('dark');
-                document.documentElement.classList.remove('light');
             } else {
-                document.documentElement.classList.add('light');
                 document.documentElement.classList.remove('dark');
             }
 
@@ -138,17 +136,26 @@
                 const btn = document.getElementById(`theme-${t}-btn`);
                 if (btn) {
                     if (t === activeTheme) {
-                        btn.classList.add('active-theme');
+                        btn.classList.add('theme-btn-active');
                     } else {
-                        btn.classList.remove('active-theme');
+                        btn.classList.remove('theme-btn-active');
                     }
                 }
             });
         }
 
+        // تشغيل السكربت فور تحميل الصفحة وتحديد الزر النشط
         document.addEventListener('DOMContentLoaded', () => {
-            const savedTheme = localStorage.getItem('app_theme') || 'dark';
+            const savedTheme = localStorage.getItem('app_theme') || 'auto';
             applyTheme(savedTheme);
+        });
+
+        // الاستماع لتغييرات النظام في حال اختيار "تلقائي"
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            const currentTheme = localStorage.getItem('app_theme') || 'auto';
+            if (currentTheme === 'auto') {
+                applyTheme('auto');
+            }
         });
     </script>
 
