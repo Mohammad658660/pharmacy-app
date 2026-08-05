@@ -1,2 +1,0 @@
-[phases.install]
-cmds = ['composer install --ignore-platform-req=ext-gd --optimize-autoloader --no-scripts --no-interaction']
