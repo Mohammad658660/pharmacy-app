@@ -1,8 +1,2 @@
-[providers]
-providers = ['php']
-
-[variables]
-NIXPACKS_PHP_EXTENSIONS = 'gd, zip, pdo_mysql'
-
-[phases.setup]
-nixPkgs = ['php82Extensions.gd', 'php82Extensions.zip', 'php82Extensions.pdo_mysql']
+[phases.install]
+cmds = ['composer install --ignore-platform-req=ext-gd --optimize-autoloader --no-scripts --no-interaction']
