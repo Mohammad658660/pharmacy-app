@@ -47,4 +47,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/debts/{id}', [DebtController::class, 'destroy'])->name('debts.destroy');
     Route::get('/settings/pharmacy', [SettingController::class, 'pharmacyIndex'])->name('settings.pharmacy.index');
     Route::post('/settings/pharmacy', [SettingController::class, 'updatePharmacy'])->name('settings.pharmacy.update');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
 });
+    });

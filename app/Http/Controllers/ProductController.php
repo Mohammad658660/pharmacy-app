@@ -4,44 +4,47 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use App\Imports\ProductsImport;
+use Maatwebsite\Excel\Facades\Excel;
 
 class ProductController extends Controller
 {
-    public function index()
+    /**
+     * عرض قائمة الأدوية مع إمكانية البحث والترقيم
+     */
+    public function index(Request $request)
     {
-        if (Product::count() === 0) {
-            Product::create([
-                'trade_name' => '1 2 3 (ONE TWO THREE) 20 F.C.TABS.',
-                'scientific_name' => 'PARACETAMOL + PSEUDOEPHEDRINE',
-                'barcode' => '6222001401080',
-                'cost_price' => 0.00,
-                'selling_price' => 10.00,
-                'quantity_packets' => 10,
-                'min_quantity' => 5
-            ]);
+        $query = Product::query();
 
-            Product::create([
-                'trade_name' => '1 2 3 EXTRA 20 F.C.TABS.',
-                'scientific_name' => 'PARACETAMOL + PSEUDOEPHEDRINE',
-                'barcode' => '6222001401081',
-                'cost_price' => 30.44,
-                'selling_price' => 37.00,
-                'quantity_packets' => 7,
-                'min_quantity' => 5
-            ]);
-
-            Product::create([
-                'trade_name' => 'VITAMIN C 1 GM',
-                'scientific_name' => 'ASCORBIC ACID',
-                'barcode' => '6222001401082',
-                'cost_price' => 15.00,
-                'selling_price' => 26.00,
-                'quantity_packets' => 0,
-                'min_quantity' => 5
-            ]);
+        // تصفية النتائج عند وجود كلمة بحث
+        if ($request->filled('search')) {
+            $search = $request->search;
+            $query->where('trade_name', 'LIKE', "%{$search}%")
+                  ->orWhere('name_ar', 'LIKE', "%{$search}%")
+                  ->orWhere('scientific_name', 'LIKE', "%{$search}%")
+                  ->orWhere('barcode', 'LIKE', "%{$search}%");
         }
 
-        $products = Product::all();
+        // جلب الأدوية مجزأة (25 عنصر بكل صفحة)
+        $products = $query->latest()->paginate(25);
+
         return view('products.index', compact('products'));
+    }
+
+    /**
+     * استيراد ملف الإكسل وقراءة البيانات
+     */
+    public function import(Request $request)
+    {
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
+
+        try {
+            Excel::import(new ProductsImport, $request->file('file'));
+            return redirect()->back()->with('success', 'تم استيراد قائمة الأدوية بنجاح!');
+        } catch (\Exception $e) {
+            return redirect()->back()->with('error', 'حدث خطأ أثناء استيراد الملف: ' . $e->getMessage());
+        }
     }
 }
