@@ -1,2 +1,2 @@
-[variables]
-NIXPACKS_PHP_EXTENSIONS = 'gd, zip, pdo_mysql'
+[nixpkgs]
+pkgs = ["php83Extensions.zip", "php83Extensions.gd", "php83Extensions.pdo_mysql"]
