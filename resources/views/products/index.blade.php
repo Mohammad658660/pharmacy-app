@@ -138,6 +138,11 @@
         <form action="{{ route('products.store') }}" method="POST" class="space-y-4">
             @csrf
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {{-- حقل الباركود --}}
+             <div class="md:col-span-2">
+                <label class="block text-xs font-semibold text-slate-400 mb-1">الباركود (Barcode)</label>
+                 <input type="text" name="barcode" placeholder="امسح الباركود بالماسح الضوئي أو ادخله يدويًا..." class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
+                   </div>
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">اسم الدواء التجاري (EN)*</label>
                     <input type="text" name="trade_name" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">
@@ -201,6 +206,7 @@
             @csrf
             @method('PUT')
             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                
                 <div>
                     <label class="block text-xs font-semibold text-slate-400 mb-1">اسم الدواء التجاري (EN)*</label>
                     <input type="text" name="trade_name" value="{{ $product->trade_name }}" required class="w-full px-3 py-2 bg-slate-800 border border-slate-700 rounded-xl text-white text-sm focus:outline-none focus:border-indigo-500">

@@ -92,6 +92,7 @@ class ProductController extends Controller
         $product = Product::findOrFail($id);
 
         $validated = $request->validate([
+            'barcode' => 'nullable|string|max:100|unique:products,barcode,' . ($id ?? 'NULL') . ',id',
             'trade_name'       => 'required|string',
             'name_ar'          => 'nullable|string',
             'scientific_name'  => 'nullable|string',
@@ -119,4 +120,30 @@ class ProductController extends Controller
 
         return redirect()->back()->with('success', 'تم حذف الدواء بنجاح!');
     }
+    /**
+ * البحث عن الدواء لشاشة البيع (عن طريق الباركود أو الاسم)
+ */
+public function posSearch(Request $request)
+{
+    $query = $request->get('query');
+
+    if (!$query) {
+        return response()->json([]);
+    }
+
+    // 1. بحث مطابقة تامة بالباركود (لأجهزة الماسح الضوئي)
+    $exactProduct = Product::where('barcode', $query)->first();
+    if ($exactProduct) {
+        return response()->json(['type' => 'barcode', 'product' => $exactProduct]);
+    }
+
+    // 2. بحث جزئي بالاسم التجاري أو العربي أو المادة الفعالة
+    $products = Product::where('trade_name', 'LIKE', "%{$query}%")
+        ->orWhere('name_ar', 'LIKE', "%{$query}%")
+        ->orWhere('scientific_name', 'LIKE', "%{$query}%")
+        ->limit(10)
+        ->get();
+
+    return response()->json(['type' => 'search', 'products' => $products]);
+}
 }
