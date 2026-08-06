@@ -15,12 +15,12 @@ return new class extends Migration
             $table->id();
             
             // الأسماء والمواد الفعالة
-            $table->string('trade_name'); // اسم الدواء التجاري (أو الإنجليزي)
+            $table->text('trade_name'); // اسم الدواء التجاري (أو الإنجليزي)
             $table->string('name_ar')->nullable(); // الاسم العربي من الإكسل
-            $table->string('scientific_name')->nullable(); // الاسم العلمي / المادة الفعالة
+            $table->text('scientific_name')->nullable(); // الاسم العلمي / المادة الفعالة
             
             // تفاصيل إضافية من ملف الإكسل
-            $table->string('company')->nullable(); // الشركة
+            $table->text('company')->nullable(); // الشركة
             $table->string('category')->nullable(); // الفئة
             $table->string('form')->nullable(); // الشكل الصيدلاني (أقراص، شراب، إلخ)
             
