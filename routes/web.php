@@ -7,9 +7,10 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingController;
-// ----------------------------------------------------
-// 1️⃣ مسارات تسجيل الدخول والخروج (عامة وبدون حماية)
-// ----------------------------------------------------
+
+// //--------------------------------------------------------------------------
+// مسارات تسجيل الدخول والخروج (عامة وبدون حماية)
+// //--------------------------------------------------------------------------
 Route::get('/login', [AuthController::class, 'showLogin'])->name('login');
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/logout', [AuthController::class, 'logout'])->name('logout');
@@ -19,9 +20,10 @@ Route::get('/settings', [SettingController::class, 'index'])->name('settings.ind
 Route::get('/settings/users', [SettingController::class, 'usersIndex'])->name('settings.users.index');
 Route::post('/settings/users', [SettingController::class, 'storeUser'])->name('settings.users.store');
 Route::post('/settings/password', [SettingController::class, 'updatePassword'])->name('settings.password.update');
-// ----------------------------------------------------
-// 2️⃣ مسارات النظام المحمية (تستوجب تسجيل الدخول)
-// ----------------------------------------------------
+
+// //--------------------------------------------------------------------------
+// مسارات النظام المحمية (تتطلب تسجيل الدخول)
+// //--------------------------------------------------------------------------
 Route::middleware(['auth'])->group(function () {
 
     // الواجهة الرئيسية
@@ -47,8 +49,12 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/debts/{id}', [DebtController::class, 'destroy'])->name('debts.destroy');
     Route::get('/settings/pharmacy', [SettingController::class, 'pharmacyIndex'])->name('settings.pharmacy.index');
     Route::post('/settings/pharmacy', [SettingController::class, 'updatePharmacy'])->name('settings.pharmacy.update');
-Route::middleware(['auth'])->group(function () {
+
+    // مسارات المنتجات والأدوية
     Route::get('/products', [ProductController::class, 'index'])->name('products.index');
     Route::post('/products/import', [ProductController::class, 'import'])->name('products.import');
+    Route::post('/products', [ProductController::class, 'store'])->name('products.store');
+    Route::put('/products/{id}', [ProductController::class, 'update'])->name('products.update');
+    Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
+
 });
-    });
