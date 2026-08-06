@@ -40,11 +40,11 @@ class ProductController extends Controller
             'file' => 'required|mimes:xlsx,xls,csv'
         ]);
 
-        try {
-            Excel::import(new ProductsImport, $request->file('file'));
-            return redirect()->back()->with('success', 'تم استيراد قائمة الأدوية بنجاح!');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء استيراد الملف: ' . $e->getMessage());
-        }
+   try {
+    Excel::import(new ProductsImport, $request->file('file'));
+    return redirect()->back()->with('success', '!تم استيراد قائمة الأدوية بنجاح');
+} catch (\Throwable $e) {
+    return redirect()->back()->with('error', 'حدث خطأ أثناء استيراد الملف: ' . $e->getMessage());
+}
     }
 }
