@@ -89,12 +89,12 @@
                             <td class="p-4 text-center">
                                 <div class="flex items-center justify-center gap-2">
                                     {{-- زر التعديل --}}
-                                    <button onclick="openModal('editModal{{ $product->id }}')" class="p-2 text-amber-500 hover:bg-amber-500/10 rounded-lg transition" title="تعديل">
+                                    <button type="button" onclick="openModal('editModal{{ $product->id }}')" class="p-2 text-amber-500 hover:bg-amber-500/10 rounded-lg transition" title="تعديل">
                                         ✏️
                                     </button>
 
                                     {{-- زر الحذف --}}
-                                    <form action="{{ route('products.destroy', $product->id) }}" method="POST" onsubmit="return confirm('هل أنت تأكد من حذف هذا الدواء؟')">
+                                    <form action="{{ route('products.destroy', ['id' => $product->id]) }}" method="POST" onsubmit="return confirm('هل أنت تأكد من حذف هذا الدواء؟')">
                                         @csrf
                                         @method('DELETE')
                                         <button type="submit" class="p-2 text-rose-500 hover:bg-rose-500/10 rounded-lg transition" title="حذف">
@@ -105,15 +105,15 @@
                             </td>
                         </tr>
 
-                        {{-- Modal تعديل الدواء لكل عنصر --}}
+                        {{-- Modal تعديل الدواء --}}
                         <div id="editModal{{ $product->id }}" class="fixed inset-0 z-50 hidden bg-slate-900/60 backdrop-blur-sm overflow-y-auto h-full w-full flex items-center justify-center p-4">
                             <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-4 text-right">
                                 <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
                                     <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">تعديل بيانات: {{ $product->trade_name }}</h3>
-                                    <button onclick="closeModal('editModal{{ $product->id }}')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+                                    <button type="button" onclick="closeModal('editModal{{ $product->id }}')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
                                 </div>
 
-                                <form action="{{ route('products.update', $product->id) }}" method="POST" class="space-y-4">
+                                <form action="{{ route('products.update', ['id' => $product->id]) }}" method="POST" class="space-y-4">
                                     @csrf
                                     @method('PUT')
 
@@ -191,7 +191,7 @@
     <div class="relative bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-2xl max-w-2xl w-full p-6 shadow-xl space-y-4 text-right">
         <div class="flex justify-between items-center border-b border-slate-200 dark:border-slate-800 pb-3">
             <h3 class="text-lg font-bold text-slate-800 dark:text-slate-100">➕ إضافة دواء جديد</h3>
-            <button onclick="closeModal('addProductModal')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
+            <button type="button" onclick="closeModal('addProductModal')" class="text-slate-400 hover:text-slate-600 text-lg">✕</button>
         </div>
 
         <form action="{{ route('products.store') }}" method="POST" class="space-y-4">
