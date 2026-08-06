@@ -6,30 +6,37 @@ use App\Models\Product;
 use Illuminate\Http\Request;
 use App\Imports\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Schema;
 
 class ProductController extends Controller
 {
     /**
      * عرض قائمة الأدوية مع إمكانية البحث والترقيم
      */
-    public function index(Request $request)
-    {
-        $query = Product::query();
+   public function index(Request $request)
+{
+    $query = Product::query();
 
-        // تصفية النتائج عند وجود كلمة بحث
-        if ($request->filled('search')) {
-            $search = $request->search;
-            $query->where('trade_name', 'LIKE', "%{$search}%")
-                  ->orWhere('name_ar', 'LIKE', "%{$search}%")
-                  ->orWhere('scientific_name', 'LIKE', "%{$search}%")
-                  ->orWhere('barcode', 'LIKE', "%{$search}%");
-        }
+    if ($request->filled('search')) {
+        $search = $request->input('search');
 
-        // جلب الأدوية مجزأة (25 عنصر بكل صفحة)
-        $products = $query->latest()->paginate(25);
+        $query->where(function ($q) use ($search) {
+            $q->where('trade_name', 'LIKE', "%{$search}%")
+              ->orWhere('name_ar', 'LIKE', "%{$search}%")
+              ->orWhere('scientific_name', 'LIKE', "%{$search}%")
+              ->orWhere('company', 'LIKE', "%{$search}%");
 
-        return view('products.index', compact('products'));
+            // في حال وجود عمود الباركود في جدولك
+            if (Schema::hasColumn('products', 'barcode')) {
+                $q->orWhere('barcode', 'LIKE', "%{$search}%");
+            }
+        });
     }
+
+    $products = $query->latest()->paginate(25);
+
+    return view('products.index', compact('products'));
+}
 
     /**
      * استيراد ملف الإكسل وقراءة البيانات
