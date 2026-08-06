@@ -1,0 +1,5 @@
+[providers]
+providers = ["php", "node"]
+
+[nixpkgs]
+pkgs = ["php83Extensions.zip", "php83Extensions.gd", "php83Extensions.pdo_mysql"]
