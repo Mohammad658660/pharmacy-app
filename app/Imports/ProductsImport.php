@@ -28,17 +28,17 @@ class ProductsImport implements ToModel, WithHeadingRow
         $form           = $row['shkl_sydlany'] ?? $row['form'] ?? null;
         $price          = $row['saar_gdyd'] ?? $row['s3r_sydlany'] ?? $row['selling_price'] ?? 0;
 
-        return new Product([
-            'trade_name'       => $tradeName,
-            'name_ar'          => $nameAr,
-            'scientific_name'  => $scientificName,
-            'company'          => $company,
-            'category'         => $category,
-            'form'             => $form,
-            'cost_price'       => 0,
-            'selling_price'    => floatval($price),
-            'quantity_packets' => 0,
-            'min_quantity'     => 5,
+      return new Product([
+            'trade_name'      => $row['trade_name'] ?? $row['اسم_الدواء'] ?? $row['trade_name_en'] ?? null,
+            'name_ar'         => $row['name_ar'] ?? $row['الاسم_العربي'] ?? null,
+            'scientific_name' => $row['scientific_name'] ?? $row['المادة_الفعالة'] ?? null,
+            'company'         => $row['company'] ?? $row['الشركة'] ?? null,
+            'category'        => $row['category'] ?? $row['التصنيف'] ?? null,
+            'form'            => $row['form'] ?? $row['الشكل_الصيدلاني'] ?? null,
+            'cost_price'      => $row['cost_price'] ?? $row['سعر_التكلفة'] ?? 0,
+            'selling_price'   => $row['selling_price'] ?? $row['سعر_البيع'] ?? 0,
+            'quantity_packets'=> $row['quantity_packets'] ?? $row['الكمية'] ?? 0,
+            'min_quantity'    => $row['min_quantity'] ?? $row['الحد_الأدنى'] ?? 5,
         ]);
     }
 }

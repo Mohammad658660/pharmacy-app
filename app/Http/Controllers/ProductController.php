@@ -17,8 +17,9 @@ class ProductController extends Controller
     {
         $query = Product::query();
 
+        // تطبيق شرط البحث إذا تم إرسال كلمة بحث
         if ($request->filled('search')) {
-            $search = $request->input('search');
+            $search = trim($request->input('search'));
 
             $query->where(function ($q) use ($search) {
                 $q->where('trade_name', 'LIKE', "%{$search}%")
@@ -32,28 +33,33 @@ class ProductController extends Controller
             });
         }
 
-        // استخدام withQueryString للحفاظ على كلمة البحث أثناء التنقل بين الصفحات
-        $products = $query->latest()->paginate(25)->withQueryString();
+        // عرض 15 عنصر بالصفحة وحفظ معايير البحث في أزرار التنقل بين الصفحات
+        $products = $query->latest()->paginate(15)->withQueryString();
 
         return view('products.index', compact('products'));
     }
 
     /**
-     * استيراد ملف الإكسل وقراءة البيانات
+     * استيراد ملف الإكسل
      */
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv'
-        ]);
+  public function import(Request $request)
+{
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv|max:10240', // حد أقصى 10 ميجابايت
+    ], [
+        'file.required' => 'يرجى اختيار ملف الإكسل أولاً.',
+        'file.mimes'    => 'صيغة الملف يجب أن تكون xlsx, xls أو csv.',
+        'file.max'      => 'حجم الملف كبير جداً (الأقصى 10 ميجابايت).',
+    ]);
 
-        try {
-            Excel::import(new ProductsImport, $request->file('file'));
-            return redirect()->back()->with('success', 'تم استيراد قائمة الأدوية بنجاح!');
-        } catch (\Throwable $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء استيراد الملف: ' . $e->getMessage());
-        }
+    try {
+        Excel::import(new ProductsImport, $request->file('file'));
+
+        return redirect()->back()->with('success', 'تم استيراد شيت الإكسل وإضافة الأدوية بنجاح!');
+    } catch (\Exception $e) {
+        return redirect()->back()->with('error', 'حدث خطأ أثناء رفع الملف: ' . $e->getMessage());
     }
+}
 
     /**
      * إضافة دواء جديد يدوياً
