@@ -125,25 +125,22 @@ class ProductController extends Controller
  */
 public function posSearch(Request $request)
 {
-    $query = $request->get('query');
+    $query = strtolower(trim($request->get('query')));
 
-    if (!$query) {
-        return response()->json([]);
+    if (empty($query)) {
+        return response()->json(['type' => 'search', 'products' => []]);
     }
 
-    // 1. بحث مطابقة تامة بالباركود (لأجهزة الماسح الضوئي)
-    $exactProduct = Product::where('barcode', $query)->first();
-    if ($exactProduct) {
-        return response()->json(['type' => 'barcode', 'product' => $exactProduct]);
-    }
-
-    // 2. بحث جزئي بالاسم التجاري أو العربي أو المادة الفعالة
-    $products = Product::where('trade_name', 'LIKE', "%{$query}%")
-        ->orWhere('name_ar', 'LIKE', "%{$query}%")
-        ->orWhere('scientific_name', 'LIKE', "%{$query}%")
-        ->limit(10)
+    // استخدام LOWER للبحث بغض النظر عن حالة الحروف الكبيرة/الصغيرة
+    $products = Product::whereRaw('LOWER(trade_name) LIKE ?', ["%{$query}%"])
+        ->orWhereRaw('LOWER(scientific_name) LIKE ?', ["%{$query}%"])
+        ->orWhere('barcode', $query)
+        ->take(10)
         ->get();
 
-    return response()->json(['type' => 'search', 'products' => $products]);
+    return response()->json([
+        'type' => 'search',
+        'products' => $products
+    ]);
 }
 }
