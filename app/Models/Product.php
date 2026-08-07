@@ -36,30 +36,33 @@ class Product extends Model
     /**
      * الأدوية منتهية الصلاحية
      */
-    public function scopeExpired($query)
-    {
-        return $query->whereNotNull('expiry_date')
-                     ->where('expiry_date', '<=', Carbon::today());
-    }
+/**
+ * الأدوية منتهية الصلاحية
+ */
+public function scopeExpired($query)
+{
+    return $query->whereNotNull('expiry_date')
+                 ->where('expiry_date', '<=', today());
+}
 
-    /**
-     * الأدوية القريبة من الانتهاء (خلال عدد أيام محدد، افتراضياً 90 يوماً)
-     */
-    public function scopeNearExpiry($query, $days = 90)
-    {
-        return $query->whereNotNull('expiry_date')
-                     ->where('expiry_date', '>', Carbon::today())
-                     ->where('expiry_date', '<=', Carbon::today()->addDays($days));
-    }
+/**
+ * الأدوية القريبة من الانتهاء
+ */
+public function scopeNearExpiry($query, $days = 90)
+{
+    return $query->whereNotNull('expiry_date')
+                 ->where('expiry_date', '>', today())
+                 ->where('expiry_date', '<=', today()->addDays($days));
+}
 
-    /**
-     * الأدوية ذات الكميات القليلة (نواقص المخزون)
-     */
-    public function scopeLowStock($query)
-    {
-        return $query->whereColumn('quantity_packets', '<=', 'min_quantity')
-                     ->where('quantity_packets', '>', 0);
-    }
+/**
+ * الأدوية ذات الكميات القليلة (نواقص المخزون)
+ */
+public function scopeLowStock($query)
+{
+    return $query->whereColumn('quantity_packets', '<=', 'min_quantity')
+                 ->where('quantity_packets', '>', 0);
+}
 
     /**
      * المواد والأدوية التالفة
