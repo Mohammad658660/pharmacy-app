@@ -333,7 +333,7 @@ if (tradeNameInput) {
 
 // دالة الاتصال بالـ API وجلب البيانات
 function fetchProductAndFill(query, autoAdd = false) {
-    fetch(`{{ route('products.pos-search') }}?query=${encodeURIComponent(query)}`)
+    fetch(`/products/pos-search?query=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
             if (data.type === 'barcode' && data.product) {
