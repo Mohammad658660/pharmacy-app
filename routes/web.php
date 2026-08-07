@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Artisan;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DebtController;
 use App\Http\Controllers\SaleController;
@@ -58,6 +59,8 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/products/{id}', [ProductController::class, 'destroy'])->name('products.destroy');
     Route::get('/products/pos-search', [ProductController::class, 'posSearch'])->name('products.pos-search');
     Route::get('/damaged', [ProductController::class, 'damaged'])->name('damaged.index');
-
-
+    Route::get('/run-migrations', function () {
+    Artisan::call('migrate', ['--force' => true]);
+    return 'Done! Migrations executed successfully.';
+});
     });
