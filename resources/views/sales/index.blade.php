@@ -406,5 +406,36 @@ document.addEventListener('click', function(e) {
         searchResultsBox.classList.add('hidden');
     }
 });
+
+// ==========================================
+// تحويل عناصر السلة إلى حقول مخفية عند الحفظ
+// ==========================================
+const invoiceForm = document.getElementById('invoiceForm');
+
+if (invoiceForm) {
+    invoiceForm.addEventListener('submit', function (e) {
+        // 1. التثبت من وجود مواد داخل السلة
+        if (typeof cart !== 'undefined' && cart.length === 0) {
+            e.preventDefault();
+            alert('يرجى إضافة مواد إلى الفاتورة أولاً!');
+            return false;
+        }
+
+        // 2. إزالة الحقول المخفية المضافة سابقاً منعاً للتكرار
+        document.querySelectorAll('.cart-hidden-input').forEach(el => el.remove());
+
+        // 3. تحويل مصفوفة cart إلى inputs مخفية
+        cart.forEach((item, index) => {
+            Object.keys(item).forEach(key => {
+                const hiddenInput = document.createElement('input');
+                hiddenInput.type = 'hidden';
+                hiddenInput.className = 'cart-hidden-input';
+                hiddenInput.name = `items[${index}][${key}]`;
+                hiddenInput.value = item[key];
+                invoiceForm.appendChild(hiddenInput);
+            });
+        });
+    });
+}
 </script>
 @endsection
