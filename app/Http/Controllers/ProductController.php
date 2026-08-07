@@ -132,11 +132,10 @@ public function posSearch(Request $request)
     }
 
     // استخدام LOWER للبحث بغض النظر عن حالة الحروف الكبيرة/الصغيرة
-    $products = Product::whereRaw('LOWER(trade_name) LIKE ?', ["%{$query}%"])
-        ->orWhereRaw('LOWER(scientific_name) LIKE ?', ["%{$query}%"])
-        ->orWhere('barcode', $query)
-        ->take(10)
-        ->get();
+   $products = Product::whereRaw('LOWER(trade_name) LIKE ?', ["%{$query}%"])
+    ->orWhereRaw('LOWER(scientific_name) LIKE ?', ["%{$query}%"])
+    ->take(10)
+    ->get();
 
     return response()->json([
         'type' => 'search',
