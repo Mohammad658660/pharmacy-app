@@ -109,6 +109,13 @@
                             <input type="text" id="product_price" value="0" oninput="formatPriceInput(this)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-white focus:outline-none focus:border-indigo-500">
                         </div>
                     </div>
+          <div class="form-group">
+    <label>نوع البيع</label>
+    <select id="sale_unit" class="form-control" style="width: 100% !important; background-color: transparent !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.15);" onchange="changeSaleUnit()">
+        <option value="packet" style="background: #1a1c23; color: #fff;">باكيت (سعر كامل)</option>
+        <option value="strip" style="background: #1a1c23; color: #fff;">شريط (سعر مقسم)</option>
+    </select>
+</div>
 
                     <div class="flex justify-between items-center pt-2">
                         <div class="w-32">
@@ -166,21 +173,25 @@ function addItemToCart() {
     const priceInput = document.getElementById('product_price');
     const qtyInput = document.getElementById('product_qty');
     const barcodeInput = document.getElementById('product_barcode');
+    const unitSelect = document.getElementById('sale_unit');
 
     const tradeName = tradeNameInput ? tradeNameInput.value.trim() : '';
     const scientificName = scientificNameInput ? scientificNameInput.value.trim() : '';
+    
     const priceRaw = priceInput ? priceInput.value.replace(/,/g, '') : '0';
     const price = parseFloat(priceRaw) || 0;
+    
     const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
+    const saleUnit = unitSelect ? unitSelect.value : 'packet';
 
     if (!tradeName) {
-        alert("يرجى إدخال الاسم التجاري للدواء!");
+        alert("يرجى إدخال الاسم التجاري للدواء");
         if (tradeNameInput) tradeNameInput.focus();
         return;
     }
 
     if (price <= 0) {
-        alert("يرجى إدخال السعر بشكل صحيح!");
+        alert("يرجى إدخال السعر بشكل صحيح");
         if (priceInput) priceInput.focus();
         return;
     }
@@ -192,7 +203,8 @@ function addItemToCart() {
         scientific_name: scientificName,
         price: price,
         qty: qty,
-        subtotal: subtotal
+        subtotal: subtotal,
+        unit: saleUnit
     });
 
     updateCartTable();
@@ -203,7 +215,6 @@ function addItemToCart() {
     if (barcodeInput) barcodeInput.value = '';
     if (priceInput) priceInput.value = '0';
     if (qtyInput) qtyInput.value = '1';
-
     if (barcodeInput) barcodeInput.focus();
 }
 
@@ -389,15 +400,47 @@ function selectProductFromSearch(product) {
 }
 
 // تعبئة البيانات في الحقول
+// تخزين مؤقت لبيانات الدواء المختار
+let currentPacketPrice = 0;
+let currentStripPrice = 0;
+
 function fillFields(product) {
     if (document.getElementById('product_barcode')) document.getElementById('product_barcode').value = product.barcode || '';
     if (document.getElementById('trade_name')) document.getElementById('trade_name').value = product.trade_name || '';
     if (document.getElementById('scientific_name')) document.getElementById('scientific_name').value = product.scientific_name || '';
-    
+
+    // قراءة سعر الباكيت وعدد الأشرطة من الدواء
+    currentPacketPrice = Number(product.selling_price) || 0;
+    const itemsPerPacket = Number(product.items_per_packet) || Number(product.strip_count) || Number(product.pieces) || 2;
+    // حساب سعر الشريط تلقائياً بالقسمة
+    currentStripPrice = currentPacketPrice / itemsPerPacket;
+
+    // إعادة ضبط القائمة المنسدلة إلى باكيت تلقائياً
+    const unitSelect = document.getElementById('sale_unit');
+    if (unitSelect) unitSelect.value = 'packet';
+
+    // وضع سعر الباكيت الافتراضي في حقل السعر
+    updatePriceField();
+}
+
+// دالة تحدث السعر حسب الاختيار (باكيت أو شريط)
+function changeSaleUnit() {
+    updatePriceField();
+}
+
+function updatePriceField() {
+    const unitSelect = document.getElementById('sale_unit');
     const priceInput = document.getElementById('product_price');
-    if (priceInput) {
-        priceInput.value = Number(product.selling_price || 0).toLocaleString('en-US');
+    if (!priceInput) return;
+
+    let finalPrice = currentPacketPrice;
+
+    if (unitSelect && unitSelect.value === 'strip') {
+        finalPrice = currentStripPrice; // استخدام السعر المقسوم للشريط
     }
+
+    // إزالة الفواصل القديمة وتنسيق الرقم الجديد
+    priceInput.value = finalPrice.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
 // إخفاء قائمة البحث عند النقر خارجها
