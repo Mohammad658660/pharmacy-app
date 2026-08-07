@@ -6,21 +6,20 @@ use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration
 {
-    public function up(): void
-    {
-        Schema::table('products', function (Blueprint $table) {
-            if (!Schema::hasColumn('products', 'expiry_date')) {
-                $table->date('expiry_date')->nullable()->after('quantity');
-            }
-            if (!Schema::hasColumn('products', 'min_quantity')) {
-                $table->integer('min_quantity')->default(5)->after('quantity');
-            }
-            if (!Schema::hasColumn('products', 'damaged_quantity')) {
-                $table->integer('damaged_quantity')->default(0)->after('quantity');
-            }
-        });
-    }
-
+public function up(): void
+{
+    Schema::table('products', function (Blueprint $table) {
+        if (!Schema::hasColumn('products', 'expiry_date')) {
+            $table->date('expiry_date')->nullable();
+        }
+        if (!Schema::hasColumn('products', 'min_quantity')) {
+            $table->integer('min_quantity')->default(5);
+        }
+        if (!Schema::hasColumn('products', 'damaged_quantity')) {
+            $table->integer('damaged_quantity')->default(0);
+        }
+    });
+}
     public function down(): void
     {
         Schema::table('products', function (Blueprint $table) {
