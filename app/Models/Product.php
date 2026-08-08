@@ -21,6 +21,7 @@ class Product extends Model
         'cost_price',
         'selling_price',
         'quantity_packets',
+        'quantity_strips',
         'items_per_packet',
         'min_quantity',
         'damaged_quantity',
