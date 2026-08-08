@@ -25,6 +25,9 @@ class Product extends Model
         'min_quantity',
         'damaged_quantity',
         'expiry_date',
+        'quantity_packets',
+        'quantity_strips',
+        'items_per_packet',
     ];
 
     protected $casts = [

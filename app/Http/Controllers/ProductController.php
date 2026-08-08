@@ -13,7 +13,7 @@ class ProductController extends Controller
     /**
      * عرض قائمة الأدوية مع إمكانية البحث والترقيم وحساب حالات المخزون
      */
- public function index(Request $request)
+    public function index(Request $request)
     {
         $status = $request->get('status', 'all');
         $query = Product::query();
@@ -25,7 +25,6 @@ class ProductController extends Controller
         } elseif ($status === 'expired') {
             $query->expired();
         } elseif ($status === 'damaged') {
-            // التالف إما كمية تالفة أكبر من 0 أو تاريخ الانتهاء أصبح أقدم من أو يساوي اليوم
             $query->where(function ($q) {
                 $q->where('damaged_quantity', '>', 0)
                   ->orWhereDate('expiry_date', '<=', now());
@@ -54,9 +53,9 @@ class ProductController extends Controller
             'near_expiry' => Product::nearExpiry()->count(),
             'expired'     => Product::expired()->count(),
             'damaged'     => Product::where(function ($q) {
-                                $q->where('damaged_quantity', '>', 0)
-                                  ->orWhereDate('expiry_date', '<=', now());
-                            })->count(),
+                $q->where('damaged_quantity', '>', 0)
+                  ->orWhereDate('expiry_date', '<=', now());
+            })->count(),
         ];
 
         return view('products.index', compact('products', 'stats', 'status'));
@@ -77,9 +76,9 @@ class ProductController extends Controller
 
         try {
             Excel::import(new ProductsImport, $request->file('file'));
-            return redirect()->back()->with('success', 'تم استيراد وإضافة الأدوية بنجاح.');
+            return redirect()->back()->with('success', 'تمت إضافة الأدوية بنجاح');
         } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء رفع الملف.');
+            return redirect()->back()->with('error', 'حدث خطأ أثناء رفع الملف: ' . $e->getMessage());
         }
     }
 
@@ -99,6 +98,7 @@ class ProductController extends Controller
             'cost_price'       => 'required|numeric|min:0',
             'selling_price'    => 'required|numeric|min:0',
             'quantity_packets' => 'required|integer|min:0',
+            'quantity_strips'  => 'nullable|integer|min:0',
             'items_per_packet' => 'required|integer|min:1',
             'min_quantity'     => 'required|integer|min:0',
             'damaged_quantity' => 'nullable|integer|min:0',
@@ -106,39 +106,39 @@ class ProductController extends Controller
         ]);
 
         Product::create($validated);
-        
 
-        return redirect()->back()->with('success', 'تم إضافة الدواء بنجاح.');
+        return redirect()->back()->with('success', 'تمت إضافة الدواء بنجاح');
     }
 
     /**
      * تعديل بيانات وسعر الدواء
      */
-public function update(Request $request, $id)
-{
-    $product = Product::findOrFail($id);
+    public function update(Request $request, $id)
+    {
+        $product = Product::findOrFail($id);
 
-    $validated = $request->validate([
-        'barcode' => 'nullable|string|max:100|unique:products,barcode,' . $id,
-        'trade_name' => 'required|string',
-        'name_ar' => 'nullable|string',
-        'scientific_name' => 'nullable|string',
-        'company' => 'nullable|string',
-        'category' => 'nullable|string',
-        'form' => 'nullable|string',
-        'cost_price' => 'required|numeric|min:0',
-        'selling_price' => 'required|numeric|min:0',
-        'quantity_packets' => 'required|integer|min:0',
-        'min_quantity' => 'required|integer|min:0',
-        'damaged_quantity' => 'nullable|integer|min:0',
-        'expiry_date' => 'nullable|date',
-        'items_per_packet' => 'nullable|numeric|min:1',
-    ]);
+        $validated = $request->validate([
+            'barcode'          => 'nullable|string|max:100|unique:products,barcode,' . $id,
+            'trade_name'       => 'required|string',
+            'name_ar'          => 'nullable|string',
+            'scientific_name'  => 'nullable|string',
+            'company'          => 'nullable|string',
+            'category'         => 'nullable|string',
+            'form'             => 'nullable|string',
+            'cost_price'       => 'required|numeric|min:0',
+            'selling_price'    => 'required|numeric|min:0',
+            'quantity_packets' => 'required|integer|min:0',
+            'quantity_strips'  => 'nullable|integer|min:0',
+            'items_per_packet' => 'required|integer|min:1',
+            'min_quantity'     => 'required|integer|min:0',
+            'damaged_quantity' => 'nullable|integer|min:0',
+            'expiry_date'      => 'nullable|date',
+        ]);
 
-    $product->update($validated);
+        $product->update($validated);
 
-    return redirect()->back()->with('success', 'تم تحديث بيانات الدواء بنجاح');
-}
+        return redirect()->back()->with('success', 'تم تحديث بيانات الدواء بنجاح');
+    }
 
     /**
      * حذف دواء
@@ -148,7 +148,7 @@ public function update(Request $request, $id)
         $product = Product::findOrFail($id);
         $product->delete();
 
-        return redirect()->back()->with('success', 'تم حذف الدواء بنجاح.');
+        return redirect()->back()->with('success', 'تم حذف الدواء بنجاح');
     }
 
     /**
@@ -176,9 +176,8 @@ public function update(Request $request, $id)
     /**
      * عرض صفحة المواد التالفة وإحصائياتها
      */
-public function damaged()
+    public function damaged()
     {
-        // جلب المواد التي فيها تلف يدوي أو تاريخ انتهائها وصل أو فات
         $damagedProducts = Product::where(function ($q) {
             $q->where('damaged_quantity', '>', 0)
               ->orWhereDate('expiry_date', '<=', now());
@@ -197,26 +196,26 @@ public function damaged()
 
         return view('damaged.index', compact('damagedProducts', 'stats'));
     }
+
+    /**
+     * جلب تفاصيل الدواء للبيع
+     */
     public function getProductDetails($id)
-{
-    $product = Product::findOrFail($id);
+    {
+        $product = Product::findOrFail($id);
 
-    // عدد الأشرطة في الباكيت (افتراضي 1 إذا لم يُحدد)
-    $itemsPerPacket = $product->items_per_packet > 0 ? $product->items_per_packet : 1;
+        $itemsPerPacket = $product->items_per_packet > 0 ? $product->items_per_packet : 1;
+        $packetPrice = $product->selling_price;
+        $stripPrice = $packetPrice / $itemsPerPacket;
 
-    // سعر الباكيت المخزن بالنظام
-    $packetPrice = $product->selling_price; 
-
-    // حساب سعر الشريط تلقائياً بالقسمة
-    $stripPrice = $packetPrice / $itemsPerPacket;
-
-    return response()->json([
-        'id' => $product->id,
-        'trade_name' => $product->trade_name,
-        'packet_price' => $packetPrice,
-        'strip_price' => round($stripPrice, 2),
-        'items_per_packet' => $itemsPerPacket,
-        'available_packets' => $product->quantity_packets,
-    ]);
-}
+        return response()->json([
+            'id'                => $product->id,
+            'trade_name'        => $product->trade_name,
+            'packet_price'      => $packetPrice,
+            'strip_price'       => round($stripPrice, 2),
+            'items_per_packet'  => $itemsPerPacket,
+            'available_packets' => $product->quantity_packets,
+            'available_strips'  => $product->quantity_strips ?? 0,
+        ]);
+    }
 }

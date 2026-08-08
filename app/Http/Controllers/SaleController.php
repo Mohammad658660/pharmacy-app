@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use App\Models\Debt;
+use App\Models\Product;
 use Illuminate\Http\Request;
 use DB;
 
@@ -25,10 +26,10 @@ class SaleController extends Controller
 
         DB::transaction(function () use ($request) {
             $totalAmount = (float) str_replace(',', '', $request->total_amount);
-            $discount    = (float) str_replace(',', '', $request->discount ?? 0);
+            $discount = (float) str_replace(',', '', $request->discount ?? 0);
             $finalAmount = $totalAmount - $discount;
-            $paidAmount  = (float) str_replace(',', '', $request->paid_amount ?? 0);
-            
+            $paidAmount = (float) str_replace(',', '', $request->paid_amount ?? 0);
+
             if ($request->payment_type == 'cash') {
                 $paidAmount = $finalAmount;
             }
@@ -49,23 +50,47 @@ class SaleController extends Controller
                 'notes'            => $request->notes,
             ]);
 
-            // 2. حفظ مواد الفاتورة
+            // 2. حفظ مواد الفاتورة + خصم الكمية من المنتجات
             foreach ($request->items as $item) {
-               SaleItem::create([
-            'sale_id'         => $sale->id,
-            'trade_name'      => $item['trade_name'],
-            'scientific_name' => $item['scientific_name'],
-            'quantity'        => $item['qty'],
-            'unit_price'      => (float) str_replace(',', '', $item['price']),
-            'subtotal'        => (float) str_replace(',', '', $item['price']) * $item['qty'],
-        ]);
+                SaleItem::create([
+                    'sale_id'         => $sale->id,
+                    'trade_name'      => $item['trade_name'],
+                    'scientific_name' => $item['scientific_name'],
+                    'quantity'        => $item['qty'],
+                    'unit_price'      => (float) str_replace(',', '', $item['price']),
+                    'subtotal'        => (float) str_replace(',', '', $item['price']) * $item['qty'],
+                ]);
+
+                // البحث عن المنتج لخصم المخزون
+                $productId = $item['product_id'] ?? $item['id'] ?? null;
+                $product = $productId 
+                    ? Product::find($productId) 
+                    : Product::where('trade_name', $item['trade_name'])->first();
+
+                if ($product) {
+                    $qtySold = (float) $item['qty'];
+                    $unitType = $item['unit_type'] ?? 'packet'; // 'packet' أو 'strip'
+
+                    if ($unitType === 'strip') {
+                        $itemsPerPacket = $product->items_per_packet > 0 ? $product->items_per_packet : 1;
+                        $totalStrips = $product->quantity_packets * $itemsPerPacket;
+                        $remainingStrips = $totalStrips - $qtySold;
+                        $product->quantity_packets = max(0, $remainingStrips / $itemsPerPacket);
+                    } else {
+                        $product->quantity_packets = max(0, $product->quantity_packets - $qtySold);
+                    }
+
+                    $product->save();
+                }
             }
 
-            // 3. إذا كان البيع بالدين أو جزئي، يتم إنشاء سجل في جدول الديون تلقائياً!
+            // 3. إذا كان البيع بالدين أو جزئي، يتم إنشاء سجل في جدول الديون تلقائياً
             if ($request->payment_type != 'cash' && $remainingAmount > 0) {
-                
-                // تجميع أسماء الأدوية لوضعها في ملاحظات الدين
-                $itemNames = collect($request->items)->pluck('name')->implode(', ');
+                $itemNames = collect($request->items)->pluck('trade_name')->filter()->implode(', ');
+                if (empty($itemNames)) {
+                    $itemNames = collect($request->items)->pluck('name')->implode(', ');
+                }
+
                 $fullNotes = "عن فاتورة مبيعات (#{$sale->invoice_number}): " . $itemNames;
                 if ($request->notes) {
                     $fullNotes .= " - ملاحظة: " . $request->notes;
@@ -83,6 +108,6 @@ class SaleController extends Controller
             }
         });
 
-        return redirect()->back()->with('success', 'تم حفظ الفاتورة بنجاح!');
+        return redirect()->back()->with('success', '!تم حفظ الفاتورة بنجاح');
     }
 }

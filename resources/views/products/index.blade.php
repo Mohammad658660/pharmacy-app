@@ -250,7 +250,7 @@
 
         <!-- الشكل الصيدلاني وتاريخ الانتهاء -->
         <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الشكل الصيدلاني</label>
+            <label class="block text-xs font-semibold text-slate-500 mb-1">الشكل الدوائي</label>
             <input type="text" name="form" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
         <div>
@@ -258,35 +258,44 @@
             <input type="date" name="expiry_date" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
         </div>
 
-        <!-- سعر التكلفة وسعر البيع -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">سعر التكلفة *</label>
-            <input type="number" step="0.01" name="cost_price" value="0.00" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">سعر البيع *</label>
-            <input type="number" step="0.01" name="selling_price" value="0.00" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+    <!-- سعر التكلفة وسعر البيع -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">سعر التكلفة *</label>
+    <input type="number" step="0.01" name="cost_price" value="{{ old('cost_price', $product->cost_price ?? '0.00') }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
-        <!-- الكمية المتوفرة وعدد الأشرطة (متقابلان تماماً) -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (باكيت) *</label>
-            <input type="number" name="quantity_packets" value="0" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">عدد الأشرطة في الباكيت *</label>
-            <input type="number" name="items_per_packet" value="2" min="1" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">سعر البيع *</label>
+    <input type="number" step="0.01" name="selling_price" value="{{ old('selling_price', $product->selling_price ?? '0.00') }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
-        <!-- الحد الأدنى والكمية التالفة (الحد الأدنى يقابل الكمية التالفة أو اترك الكمية التالفة كاملة) -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الحد الأدنى (النواقص) *</label>
-            <input type="number" name="min_quantity" value="5" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية التالفة</label>
-            <input type="number" name="damaged_quantity" value="0" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<!-- الكمية المتوفرة (باكيت وشريط) -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (باكيت) *</label>
+    <input type="number" name="quantity_packets" value="{{ old('quantity_packets', $product->quantity_packets ?? 0) }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (شريط)</label>
+    <input type="number" name="quantity_strips" value="{{ old('quantity_strips', $product->quantity_strips ?? 0) }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500" placeholder="0">
+</div>
+
+<!-- عدد الأشرطة والحد الأدنى -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">عدد الأشرطة في الباكيت *</label>
+    <input type="number" name="items_per_packet" value="{{ old('items_per_packet', $product->items_per_packet ?? 1) }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الحد الأدنى (النواقص) *</label>
+    <input type="number" name="min_quantity" value="{{ old('min_quantity', $product->min_quantity ?? 5) }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<!-- الكمية التالفة -->
+<div class="md:col-span-2">
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية التالفة</label>
+    <input type="number" name="damaged_quantity" value="{{ old('damaged_quantity', $product->damaged_quantity ?? 0) }}" class="w-full px-3 py-2 bg-[#080d1a] border border-[#1e293b] rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
         <!-- الأزرار بالأسفل (تأخذ عرض الشاشة بالكامل) -->
         <div class="md:col-span-2 flex justify-end gap-2 pt-4 border-t border-slate-200 dark:border-slate-800 mt-2">
@@ -343,7 +352,7 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-500 mb-1">الشكل الصيدلاني</label>
+                    <label class="block text-xs font-semibold text-slate-500 mb-1">الشكل الدوائي</label>
                     <input type="text" name="form" value="{{ $product->form }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
                 </div>
 
@@ -353,40 +362,44 @@
                 </div>
 
                 
- <!-- سعر التكلفة وسعر البيع -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">سعر التكلفة *</label>
-            <input type="number" step="0.01" name="cost_price" value="{{ $product->cost_price }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">سعر البيع *</label>
-            <input type="number" step="0.01" name="selling_price" value="{{ $product->selling_price }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<!-- سعر التكلفة وسعر البيع -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">سعر التكلفة *</label>
+    <input type="number" step="0.01" name="cost_price" value="{{ old('cost_price', $product->cost_price) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
-        <!-- الكمية المتوفرة -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (باكيت) *</label>
-            <input type="number" name="quantity_packets" value="{{ $product->quantity_packets }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">سعر البيع *</label>
+    <input type="number" step="0.01" name="selling_price" value="{{ old('selling_price', $product->selling_price) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
-        <!-- حقل فارغ أو اتركه -->
-        <div></div>
+<!-- الكمية المتوفرة (باكيت) والكمية المتوفرة (شريط) -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (باكيت) *</label>
+    <input type="number" name="quantity_packets" value="{{ old('quantity_packets', $product->quantity_packets) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
 
-        <!-- عدد الأشرطة والحد الأدنى (متقابلان تماماً في نفس الصف) -->
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">عدد الأشرطة في الباكيت *</label>
-            <input type="number" name="items_per_packet" value="{{ old('items_per_packet', $product->items_per_packet ?? 2) }}" min="1" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
-        <div>
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الحد الأدنى (النواقص) *</label>
-            <input type="number" name="min_quantity" value="{{ $product->min_quantity }}" required class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية المتوفرة (شريط)</label>
+    <input type="number" name="quantity_strips" value="{{ old('quantity_strips', $product->quantity_strips ?? 0) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500" placeholder="0">
+</div>
 
-        <!-- الكمية التالفة -->
-        <div class="md:col-span-2">
-            <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية التالفة</label>
-            <input type="number" name="damaged_quantity" value="{{ $product->damaged_quantity ?? 0 }}" class="w-full px-3 py-2 rounded-xl border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-950 text-sm">
-        </div>
+<!-- عدد الأشرطة والحد الأدنى -->
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">عدد الأشرطة في الباكيت *</label>
+    <input type="number" name="items_per_packet" value="{{ old('items_per_packet', $product->items_per_packet) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<div>
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الحد الأدنى (النواقص) *</label>
+    <input type="number" name="min_quantity" value="{{ old('min_quantity', $product->min_quantity) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
+
+<!-- الكمية التالفة -->
+<div class="md:col-span-2">
+    <label class="block text-xs font-semibold text-slate-500 mb-1">الكمية التالفة</label>
+    <input type="number" name="damaged_quantity" value="{{ old('damaged_quantity', $product->damaged_quantity ?? 0) }}" class="w-full px-3 py-2 bg-[#020617] border border-slate-800 rounded-lg text-slate-100 focus:outline-none focus:border-emerald-500">
+</div>
                 
             </div>
 
@@ -405,6 +418,7 @@
         const modal = document.getElementById(id);
         if (modal) {
             modal.classList.remove('hidden');
+            
         }
     }
 

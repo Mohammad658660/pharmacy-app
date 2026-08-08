@@ -109,25 +109,25 @@
                             <input type="text" id="product_price" value="0" oninput="formatPriceInput(this)" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm dark:text-white focus:outline-none focus:border-indigo-500">
                         </div>
                     </div>
-          <div class="form-group">
-    <label>نوع البيع</label>
-    <select id="sale_unit" class="form-control" style="width: 100% !important; background-color: transparent !important; color: #ffffff !important; border: 1px solid rgba(255, 255, 255, 0.15);" onchange="changeSaleUnit()">
-        <option value="packet" style="background: #1a1c23; color: #fff;">باكيت (سعر كامل)</option>
-        <option value="strip" style="background: #1a1c23; color: #fff;">شريط (سعر مقسم)</option>
+         <!-- نوع البيع -->
+<div class="mb-3">
+    <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1">نوع البيع</label>
+    <select id="sale_unit" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 cursor-pointer text-sm">
+        <option value="strip" selected style="background: #1e293b; color: #fff;">شريط (سعر مقسم)</option>
+        <option value="packet" style="background: #1e293b; color: #fff;">باكيت (سعر كامل)</option>
     </select>
 </div>
 
-                    <div class="flex justify-between items-center pt-2">
-                        <div class="w-32">
-                            <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1">الكمية</label>
-                            <input type="number" id="product_qty" value="1" min="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-sm text-center dark:text-white focus:outline-none focus:border-indigo-500">
-                        </div>
+<div class="flex justify-between items-center pt-2">
+    <div class="w-32">
+        <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1">الكمية</label>
+        <input type="number" id="product_qty" value="1" min="1" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500">
+    </div>
 
-                        <button type="button" onclick="addItemToCart()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all self-end">
-                            إضافة +
-                        </button>
-                    </div>
-                </div>
+    <button type="button" onclick="addItemToCart()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2.5 rounded-xl font-bold text-sm shadow-md transition-all">
+        + إضافة
+    </button>
+</div>
 
                 <!-- Table Section -->
                 <div class="overflow-x-auto border border-slate-200 dark:border-slate-800 rounded-xl mt-4">
@@ -159,6 +159,7 @@
 
 <script>
 let cart = [];
+let currentProductId = null; // متغير لتخزين ID المنتج المختار حالياً
 
 // تنسيق إدخال الأسعار
 function formatPriceInput(input) {
@@ -177,10 +178,10 @@ function addItemToCart() {
 
     const tradeName = tradeNameInput ? tradeNameInput.value.trim() : '';
     const scientificName = scientificNameInput ? scientificNameInput.value.trim() : '';
-    
+
     const priceRaw = priceInput ? priceInput.value.replace(/,/g, '') : '0';
     const price = parseFloat(priceRaw) || 0;
-    
+
     const qty = qtyInput ? (parseInt(qtyInput.value) || 1) : 1;
     const saleUnit = unitSelect ? unitSelect.value : 'packet';
 
@@ -198,13 +199,15 @@ function addItemToCart() {
 
     const subtotal = price * qty;
 
+    // إضافة المنتج للسلة مع إرفاق product_id
     cart.push({
+        product_id: currentProductId, // ربط ID المنتج
         trade_name: tradeName,
         scientific_name: scientificName,
         price: price,
         qty: qty,
         subtotal: subtotal,
-        unit: saleUnit
+        unit_type: saleUnit
     });
 
     updateCartTable();
@@ -215,6 +218,10 @@ function addItemToCart() {
     if (barcodeInput) barcodeInput.value = '';
     if (priceInput) priceInput.value = '0';
     if (qtyInput) qtyInput.value = '1';
+    
+    // إعادة تعيين ID المنتج المؤقت
+    currentProductId = null;
+
     if (barcodeInput) barcodeInput.focus();
 }
 
@@ -240,13 +247,13 @@ function updateCartTable() {
     cart.forEach((item, index) => {
         const row = `
             <tr class="border-b border-slate-100 dark:border-slate-800">
-                <td class="px-3 py-3 font-semibold text-slate-800 dark:text-slate-100">${item.trade_name}</td>
-                <td class="px-3 py-3 text-slate-500 dark:text-slate-400">${item.scientific_name || '-'}</td>
+                <td class="px-3 py-3 font-semibold text-slate-800 dark:text-slate-200">${item.trade_name}</td>
+                <td class="px-3 py-3 text-slate-500 dark:text-slate-400">${item.unit_type === 'strip' ? 'شريط' : 'باكيت'}</td>
                 <td class="px-3 py-3">${item.price.toLocaleString('en-US')}</td>
                 <td class="px-3 py-3 text-center font-bold">${item.qty}</td>
                 <td class="px-3 py-3 font-bold text-emerald-600 dark:text-emerald-400">${item.subtotal.toLocaleString('en-US')}</td>
                 <td class="px-3 py-3 text-center">
-                    <button type="button" onclick="removeItem(${index})" class="text-red-500 hover:text-red-700 font-bold px-2 py-1">
+                    <button type="button" onclick="removeItem(${index})" class="text-rose-500 hover:text-rose-700 font-bold">
                         ✕
                     </button>
                 </td>
@@ -274,7 +281,7 @@ function calculateTotalFromCart() {
     const discountInput = document.getElementById('discount_input');
     const discountType = document.getElementById('discount_type') ? document.getElementById('discount_type').value : 'fixed';
 
-    const rawDiscountValue = discountInput ? (parseFloat(discountInput.value.replace(/,/g, '')) || 0) : 0;
+    const rawDiscountValue = discountInput ? (parseFloat(discountInput.value) || 0) : 0;
     let actualDiscountAmount = 0;
 
     if (discountType === 'percent') {
@@ -332,7 +339,7 @@ if (tradeNameInput) {
         const query = this.value.trim();
 
         if (query.length < 2) {
-            searchResultsBox.classList.add('hidden');
+            if (searchResultsBox) searchResultsBox.classList.add('hidden');
             return;
         }
 
@@ -342,15 +349,14 @@ if (tradeNameInput) {
     });
 }
 
-// دالة الاتصال بالـ API وجلب البيانات
+// جلب البيانات بواسطة دالة API
 function fetchProductAndFill(query, autoAdd = false) {
     fetch(`/products/pos-search?query=${encodeURIComponent(query)}`)
         .then(res => res.json())
         .then(data => {
             if (data.type === 'barcode' && data.product) {
-                // مطابقة تامة بالباركود
                 fillFields(data.product);
-                searchResultsBox.classList.add('hidden');
+                if (searchResultsBox) searchResultsBox.classList.add('hidden');
                 if (autoAdd) {
                     addItemToCart();
                 }
@@ -368,6 +374,8 @@ function fetchProductAndFill(query, autoAdd = false) {
 
 // عرض نتائج البحث تحت حقل الاسم
 function renderSearchResults(products) {
+    if (!searchResultsBox) return;
+
     if (!products || products.length === 0) {
         searchResultsBox.classList.add('hidden');
         return;
@@ -377,13 +385,10 @@ function renderSearchResults(products) {
     products.forEach(p => {
         const jsonString = JSON.stringify(p).replace(/'/g, "&apos;").replace(/"/g, "&quot;");
         html += `
-            <div onclick="selectProductFromSearch(${jsonString})" 
-                 class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center text-xs">
-                <div>
-                    <div class="font-bold text-slate-800 dark:text-white">${p.trade_name} ${p.name_ar ? '(' + p.name_ar + ')' : ''}</div>
-                    <div class="text-slate-400 text-[10px]">${p.scientific_name || '-'}</div>
-                </div>
-                <div class="text-emerald-600 dark:text-emerald-400 font-bold">${Number(p.selling_price).toLocaleString('en-US')}</div>
+            <div onclick='selectProductFromSearch(${jsonString})' 
+                 class="p-2.5 hover:bg-slate-100 dark:hover:bg-slate-700 cursor-pointer border-b border-slate-100 dark:border-slate-700">
+                <div class="font-bold text-slate-800 dark:text-white">${p.trade_name}</div>
+                <div class="text-slate-400 text-[10px]">${p.scientific_name || ''}</div>
             </div>
         `;
     });
@@ -395,35 +400,33 @@ function renderSearchResults(products) {
 // عند اختيار دواء من القائمة المنبثقة
 function selectProductFromSearch(product) {
     fillFields(product);
-    searchResultsBox.classList.add('hidden');
-    document.getElementById('product_qty').focus();
+    if (searchResultsBox) searchResultsBox.classList.add('hidden');
+    const qtyInput = document.getElementById('product_qty');
+    if (qtyInput) qtyInput.focus();
 }
 
 // تعبئة البيانات في الحقول
-// تخزين مؤقت لبيانات الدواء المختار
 let currentPacketPrice = 0;
 let currentStripPrice = 0;
 
 function fillFields(product) {
+    // تخزين ID المنتج الحالي
+    currentProductId = product.id;
+
     if (document.getElementById('product_barcode')) document.getElementById('product_barcode').value = product.barcode || '';
     if (document.getElementById('trade_name')) document.getElementById('trade_name').value = product.trade_name || '';
     if (document.getElementById('scientific_name')) document.getElementById('scientific_name').value = product.scientific_name || '';
 
-    // قراءة سعر الباكيت وعدد الأشرطة من الدواء
     currentPacketPrice = Number(product.selling_price) || 0;
-    const itemsPerPacket = Number(product.items_per_packet) || Number(product.strip_count) || Number(product.pieces) || 2;
-    // حساب سعر الشريط تلقائياً بالقسمة
+    const itemsPerPacket = Number(product.items_per_packet) || 1;
     currentStripPrice = currentPacketPrice / itemsPerPacket;
 
-    // إعادة ضبط القائمة المنسدلة إلى باكيت تلقائياً
     const unitSelect = document.getElementById('sale_unit');
-    if (unitSelect) unitSelect.value = 'packet';
+    if (unitSelect) unitSelect.value = 'strip'; // <--- تم التغيير هنا إلى strip
 
-    // وضع سعر الباكيت الافتراضي في حقل السعر
     updatePriceField();
 }
-
-// دالة تحدث السعر حسب الاختيار (باكيت أو شريط)
+// دالة تحديث السعر حسب الاختيار (باكيت أو شريط)
 function changeSaleUnit() {
     updatePriceField();
 }
@@ -436,10 +439,9 @@ function updatePriceField() {
     let finalPrice = currentPacketPrice;
 
     if (unitSelect && unitSelect.value === 'strip') {
-        finalPrice = currentStripPrice; // استخدام السعر المقسوم للشريط
+        finalPrice = currentStripPrice;
     }
 
-    // إزالة الفواصل القديمة وتنسيق الرقم الجديد
     priceInput.value = finalPrice.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
 
@@ -467,14 +469,14 @@ if (invoiceForm) {
         // 2. إزالة الحقول المخفية المضافة سابقاً منعاً للتكرار
         document.querySelectorAll('.cart-hidden-input').forEach(el => el.remove());
 
-        // 3. تحويل مصفوفة cart إلى inputs مخفية
+        // 3. تحويل cart إلى inputs مخفية
         cart.forEach((item, index) => {
             Object.keys(item).forEach(key => {
                 const hiddenInput = document.createElement('input');
                 hiddenInput.type = 'hidden';
                 hiddenInput.className = 'cart-hidden-input';
                 hiddenInput.name = `items[${index}][${key}]`;
-                hiddenInput.value = item[key];
+                hiddenInput.value = item[key] !== null ? item[key] : '';
                 invoiceForm.appendChild(hiddenInput);
             });
         });
