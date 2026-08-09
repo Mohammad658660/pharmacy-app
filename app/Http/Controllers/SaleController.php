@@ -13,16 +13,15 @@ use DB;
 class SaleController extends Controller
 {
     // 1. إضافـة دالـة المزامنة هنا
-    public function syncProductsWithBatches()
-    {
-        $products = Product::all();
-
+ public function syncProductsWithBatches()
+{
+    // معالجة المنتجات التي تحتوي على وجبات فقط وعلى دفعات (Chunk) لتجنب بطء السيرفر
+    Product::has('batches')->chunk(200, function ($products) {
         foreach ($products as $product) {
-            $nextBatch = ProductBatch::where('product_id', $product->id)
-                ->where(function($q) {
+            $nextBatch = $product->batches()
+                ->where(function ($q) {
                     $q->where('quantity_packets', '>', 0)
-                      ->orWhere('quantity_strips', '>', 0)
-                      ->orWhere('quantity', '>', 0);
+                      ->orWhere('quantity_strips', '>', 0);
                 })
                 ->orderBy('expiry_date', 'asc')
                 ->first();
@@ -35,7 +34,8 @@ class SaleController extends Controller
                 $product->save();
             }
         }
-    }
+    });
+}
     public function index()
 {
     // استدعاء المزامنة لتحديث التواريخ والأسعار فوراً
