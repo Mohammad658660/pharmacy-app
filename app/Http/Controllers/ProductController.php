@@ -140,7 +140,7 @@ class ProductController extends Controller
     }
 
     /**
-     * حذف دواء
+     * حذف دواء منفرد
      */
     public function destroy($id)
     {
@@ -148,6 +148,18 @@ class ProductController extends Controller
         $product->delete();
 
         return redirect()->back()->with('success', 'تم حذف الدواء بنجاح');
+    }
+
+    /**
+     * حذف جميع المنتجات دفعة واحدة
+     */
+    public function destroyAll()
+    {
+        Schema::disableForeignKeyConstraints();
+        Product::truncate();
+        Schema::enableForeignKeyConstraints();
+
+        return redirect()->back()->with('success', 'تم حذف جميع المنتجات بنجاح');
     }
 
     /**
