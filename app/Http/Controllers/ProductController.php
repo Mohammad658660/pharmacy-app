@@ -159,7 +159,7 @@ class ProductController extends Controller
         Product::truncate();
         Schema::enableForeignKeyConstraints();
 
-        return redirect()->back()->with('success', 'تم حذف جميع المنتجات بنجاح');
+        return redirect()->back()->with('success', 'تم مسح جميع المنتجات بنجاح');
     }
 
     /**
