@@ -31,8 +31,14 @@ class DashboardController extends Controller
         $expiryPercentage = $totalProducts > 0 ? round(($nearExpiryCount / $totalProducts) * 100, 1) : 0;
 
         // 3. الديون والمصروفات
-        $totalDebts = Debt::where('status', 'unpaid')->sum('amount');
-        $netProfit  = $totalSales * 0.25; // مثال لحساب صافي الربح أو يمكن ربطه بالـ cost_price
+// 3. الديون والمصروفات
+if (\Illuminate\Support\Facades\Schema::hasColumn('debts', 'remaining_amount')) {
+    $totalDebts = Debt::sum('remaining_amount');
+} elseif (\Illuminate\Support\Facades\Schema::hasColumn('debts', 'status')) {
+    $totalDebts = Debt::where('status', 'unpaid')->sum('amount');
+} else {
+    $totalDebts = 0;
+}        $netProfit  = $totalSales * 0.25; // مثال لحساب صافي الربح أو يمكن ربطه بالـ cost_price
 
         return view('dashboard.dashboard', compact(
             'fromDate', 'toDate', 'totalSales', 'salesCount',
