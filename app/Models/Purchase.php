@@ -10,6 +10,7 @@ class Purchase extends Model
         'product_id',
         'supplier_id',
         'quantity_packets',
+        'quantity_strips',
         'cost_price',
         'expiry_date',
     ];

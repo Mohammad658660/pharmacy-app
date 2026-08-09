@@ -8,6 +8,7 @@ use App\Http\Controllers\SaleController;
 use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingController;
+use App\Http\Controllers\PurchaseController;
 
 // //--------------------------------------------------------------------------
 // مسارات تسجيل الدخول والخروج (عامة وبدون حماية)
@@ -62,5 +63,10 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/run-migrations', function () {
     Artisan::call('migrate', ['--force' => true]);
     return 'Done! Migrations executed successfully.';
-});
+    });
+    // مسارات المشتريات
+    Route::get('/purchases', [PurchaseController::class, 'index'])->name('purchases.index');
+    Route::post('/purchases', [PurchaseController::class, 'store'])->name('purchases.store');
+    Route::delete('/purchases/clear-all', [PurchaseController::class, 'destroyAll'])->name('purchases.destroyAll');
+    Route::delete('/purchases/{id}', [PurchaseController::class, 'destroy'])->name('purchases.destroy');
     });

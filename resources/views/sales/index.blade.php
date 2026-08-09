@@ -112,10 +112,10 @@
          <!-- نوع البيع -->
 <div class="mb-3">
     <label class="block text-xs text-slate-600 dark:text-slate-400 mb-1">نوع البيع</label>
-    <select id="sale_unit" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:outline-none focus:border-indigo-500 cursor-pointer text-sm">
-        <option value="strip" selected style="background: #1e293b; color: #fff;">شريط (سعر مقسم)</option>
-        <option value="packet" style="background: #1e293b; color: #fff;">باكيت (سعر كامل)</option>
-    </select>
+    <select id="sale_unit" onchange="changeSaleUnit()" class="w-full px-3 py-2 bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700">
+    <option value="strip" selected style="background: #1e293b; color: #fff;">شريط (سعر مقسم)</option>
+    <option value="packet" style="background: #1e293b; color: #fff;">باكيت (سعر كامل)</option>
+</select>
 </div>
 
 <div class="flex justify-between items-center pt-2">
@@ -418,14 +418,19 @@ function fillFields(product) {
     if (document.getElementById('scientific_name')) document.getElementById('scientific_name').value = product.scientific_name || '';
 
     currentPacketPrice = Number(product.selling_price) || 0;
-    const itemsPerPacket = Number(product.items_per_packet) || 1;
+
+    // فحص المسميين (strips_capacity أو items_per_packet) لضمان القراءة الصحيحة
+    const itemsPerPacket = Number(product.strips_capacity) || Number(product.items_per_packet) || 1;
+    
+    // حساب سعر الشريط المقسوم
     currentStripPrice = currentPacketPrice / itemsPerPacket;
 
     const unitSelect = document.getElementById('sale_unit');
-    if (unitSelect) unitSelect.value = 'strip'; // <--- تم التغيير هنا إلى strip
+    if (unitSelect) unitSelect.value = 'strip'; 
 
     updatePriceField();
 }
+
 // دالة تحديث السعر حسب الاختيار (باكيت أو شريط)
 function changeSaleUnit() {
     updatePriceField();
@@ -444,6 +449,14 @@ function updatePriceField() {
 
     priceInput.value = finalPrice.toLocaleString('en-US', { minimumFractionDigits: 0, maximumFractionDigits: 2 });
 }
+
+// تفعيل استماع التغيير على القائمة المنسدلة
+document.addEventListener('DOMContentLoaded', function() {
+    const unitSelect = document.getElementById('sale_unit');
+    if (unitSelect) {
+        unitSelect.addEventListener('change', changeSaleUnit);
+    }
+});
 
 // إخفاء قائمة البحث عند النقر خارجها
 document.addEventListener('click', function(e) {
