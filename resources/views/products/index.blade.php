@@ -122,7 +122,7 @@
                 <tbody class="divide-y divide-slate-200 dark:divide-slate-800">
                     @forelse($products as $product)
                         <tr class="hover:bg-slate-50/50 dark:hover:bg-slate-800/50 transition-colors">
-                            <td class="p-4 text-xs font-mono text-slate-400">{{ $loop->iteration }}</td>
+                            <td class="p-4 text-xs font-mono text-slate-400">{{ $products->firstItem() + $loop->index }}</td>
                             <td class="p-4">
                                 <div class="font-bold text-slate-800 dark:text-slate-100">{{ $product->trade_name }}</div>
                                 @if($product->barcode)
