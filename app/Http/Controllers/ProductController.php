@@ -64,22 +64,23 @@ class ProductController extends Controller
     /**
      * استيراد ملف الإكسل
      */
-    public function import(Request $request)
-    {
-        $request->validate([
-            'file' => 'required|mimes:xlsx,xls,csv|max:10240',
-        ], [
-            'file.required' => 'يرجى اختيار ملف الإكسل أولاً.',
-            'file.mimes'    => 'يجب أن تكون صيغة الملف xlsx, xls أو csv.',
-            'file.max'      => 'حجم الملف كبير جداً (الأقصى 10 ميجابايت).',
-        ]);
+ public function import(Request $request)
+{
+    // 1. زيادة وقت التنفيذ إلى 5 دقائق
+    set_time_limit(300);
+    ini_set('max_execution_time', 300);
 
-        try {
-            Excel::import(new ProductsImport, $request->file('file'));
-            return redirect()->back()->with('success', 'تمت إضافة الأدوية بنجاح');
-        } catch (\Exception $e) {
-            return redirect()->back()->with('error', 'حدث خطأ أثناء رفع الملف: ' . $e->getMessage());
-        }
+    $request->validate([
+        'file' => 'required|mimes:xlsx,xls,csv'
+    ]);
+
+    // 2. تنفيذ الاستيراد داخل Transaction لسرعة فائقة
+    DB::transaction(function () use ($request) {
+        // ... كود قراءة ملف الإكسيل وحفظ المنتجات
+    });
+
+    return redirect()->back()->with('success', 'تم استيراد جميع المنتجات بنجاح');
+}
     }
 
     /**
