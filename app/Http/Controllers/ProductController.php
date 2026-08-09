@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Imports\ProductsImport;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\DB;
 
 class ProductController extends Controller
 {
@@ -64,23 +65,20 @@ class ProductController extends Controller
     /**
      * استيراد ملف الإكسل
      */
- public function import(Request $request)
-{
-    // 1. زيادة وقت التنفيذ إلى 5 دقائق
-    set_time_limit(300);
-    ini_set('max_execution_time', 300);
+    public function import(Request $request)
+    {
+        set_time_limit(300);
+        ini_set('max_execution_time', 300);
 
-    $request->validate([
-        'file' => 'required|mimes:xlsx,xls,csv'
-    ]);
+        $request->validate([
+            'file' => 'required|mimes:xlsx,xls,csv'
+        ]);
 
-    // 2. تنفيذ الاستيراد داخل Transaction لسرعة فائقة
-    DB::transaction(function () use ($request) {
-        // ... كود قراءة ملف الإكسيل وحفظ المنتجات
-    });
+        DB::transaction(function () use ($request) {
+            Excel::import(new ProductsImport, $request->file('file'));
+        });
 
-    return redirect()->back()->with('success', 'تم استيراد جميع المنتجات بنجاح');
-}
+        return redirect()->back()->with('success', 'تم استيراد جميع المنتجات بنجاح');
     }
 
     /**
@@ -210,13 +208,13 @@ class ProductController extends Controller
         $stripPrice = $packetPrice / $itemsPerPacket;
 
         return response()->json([
-            'id'                => $product->id,
-            'trade_name'        => $product->trade_name,
-            'packet_price'      => $packetPrice,
-            'strip_price'       => round($stripPrice, 2),
-            'items_per_packet'  => $itemsPerPacket,
-            'available_packets' => $product->quantity_packets,
-            'available_strips'  => $product->quantity_strips ?? 0,
+            'id'               => $product->id,
+            'trade_name'       => $product->trade_name,
+            'packet_price'     => $packetPrice,
+            'strip_price'      => round($stripPrice, 2),
+            'items_per_packet' => $itemsPerPacket,
+            'available_packets'=> $product->quantity_packets,
+            'available_strips' => $product->quantity_strips ?? 0,
         ]);
     }
 }
