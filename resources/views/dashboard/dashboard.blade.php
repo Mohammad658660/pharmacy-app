@@ -15,8 +15,7 @@
                 </button>
 
                 <!-- القائمة المنسدلة للأنظمة -->
-                <div x-show="open" @click.away="open = false" class="absolute right-0 mt-2 w-64 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl py-2 z-50">
-                    <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 text-slate-200 transition">
+<div x-show="open" x-cloak @click.away="open = false" style="display: none;" class="absolute right-0 mt-2 w-64 bg-slate-800 border border-slate-700 rounded-xl shadow-2xl py-2 z-50">                    <a href="{{ route('products.index') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 text-slate-200 transition">
                         <span class="text-emerald-400">💊</span> إدارة الأدوية والمخزون
                     </a>
                     <a href="{{ route('sales.index') }}" class="flex items-center gap-3 px-4 py-3 hover:bg-slate-700 text-slate-200 transition">

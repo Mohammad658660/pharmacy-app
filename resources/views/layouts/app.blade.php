@@ -11,6 +11,7 @@
         tailwind.config = {
             darkMode: 'class',
         }
+        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </script>
 
     <!-- سكربت الفحص السريع لمنع وميض الشاشة عند التنقل -->
@@ -79,10 +80,12 @@
 
             <!-- أزرار الواجهة الرئيسية وتسجيل الخروج -->
             <div class="flex items-center gap-2">
-                <a href="{{ route('home') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1 shadow-sm">
-                    🏡 الواجهة الرئيسية
-                </a>
-
+               <a href="{{ route('home.menu') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
+    🏡 الواجهة الرئيسية
+</a>
+<a href="{{ route('dashboard') }}" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
+    📊 لوحة الإحصائيات
+</a>
                 <form action="{{ route('logout') }}" method="POST" class="inline">
                     @csrf
                     <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">

@@ -34,7 +34,7 @@ class DashboardController extends Controller
         $totalDebts = Debt::where('status', 'unpaid')->sum('amount');
         $netProfit  = $totalSales * 0.25; // مثال لحساب صافي الربح أو يمكن ربطه بالـ cost_price
 
-        return view('dashboard', compact(
+        return view('dashboard.dashboard', compact(
             'fromDate', 'toDate', 'totalSales', 'salesCount',
             'totalProducts', 'inventoryValue', 'expiryPercentage',
             'totalDebts', 'netProfit'

@@ -255,7 +255,22 @@
                     <span>سجل التالف</span> &larr;
                 </div>
             </a>
-
+<!-- كارت لوحة الإحصائيات (الداشبورد) -->
+<a href="{{ route('dashboard') }}" class="bg-slate-800/80 hover:bg-slate-800 border border-slate-700/60 hover:border-emerald-500/50 rounded-2xl p-6 transition-all duration-300 group shadow-lg flex flex-col justify-between">
+    <div class="flex items-center justify-between">
+        <span class="text-xs bg-emerald-500/10 text-emerald-400 px-3 py-1 rounded-full border border-emerald-500/20 font-semibold">إحصائيات</span>
+        <div class="w-12 h-12 bg-emerald-500/10 rounded-xl flex items-center justify-center text-emerald-400 text-2xl group-hover:scale-110 transition-transform">
+            📊
+        </div>
+    </div>
+    <div class="mt-6">
+        <h3 class="text-xl font-bold text-white group-hover:text-emerald-400 transition-colors">لوحة الإحصائيات</h3>
+        <p class="text-xs text-slate-400 mt-2">متابعة المبيعات، الأرباح، وقيمة المخزون</p>
+    </div>
+    <div class="mt-4 text-xs font-bold text-emerald-400 flex items-center gap-1">
+        عرض اللوحة ←
+    </div>
+</a>
             <!-- 11. الإعدادات -->
             <a href="/settings" class="group bg-slate-900 border border-slate-800 hover:border-slate-500/50 p-6 rounded-2xl transition-all hover:shadow-xl hover:shadow-slate-500/10 flex flex-col justify-between">
                 <div class="flex items-center justify-between mb-4">
