@@ -8,6 +8,18 @@ use Carbon\Carbon;
 
 class Product extends Model
 {
+    public function batches()
+{
+    return $this->hasMany(ProductBatch::class)->where(function($q) {
+        $q->where('quantity_packets', '>', 0)
+          ->orWhere('quantity_strips', '>', 0);
+    })->orderBy('expiry_date', 'asc'); // ترتيب الوجبات حسب تاريخ الانتهاء الأقرب (FEFO)
+}
+
+public function purchases()
+{
+    return $this->hasMany(Purchase::class);
+}
     use HasFactory;
 
     protected $fillable = [
