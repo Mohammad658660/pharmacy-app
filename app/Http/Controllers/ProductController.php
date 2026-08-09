@@ -46,8 +46,7 @@ class ProductController extends Controller
             });
         }
 
-        $products = $query->latest()->paginate(15)->withQueryString();
-
+$products = $query->orderBy('trade_name', 'asc')->paginate(15)->withQueryString();
         $stats = [
             'total_count' => Product::count(),
             'low_stock'   => Product::lowStock()->count(),
