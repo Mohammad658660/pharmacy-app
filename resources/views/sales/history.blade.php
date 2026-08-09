@@ -69,9 +69,7 @@
                                 </div>
                             </td>
                             <td class="p-4 text-center">
-                                <a href="{{ route('sales.print', $sale->id) }}" target="_blank" class="bg-indigo-50 dark:bg-indigo-600/20 hover:bg-indigo-100 dark:hover:bg-indigo-600/40 text-indigo-600 dark:text-indigo-400 border border-indigo-200 dark:border-indigo-500/30 px-3 py-1.5 rounded-lg text-xs font-semibold transition inline-flex items-center gap-1 shadow-sm">
-                                    🖨️ طباعة
-                                </a>
+                               <a href="{{ route('invoices.print', $sale->id) }}" target="_blank" ...>
                             </td>
                         </tr>
                     @empty
