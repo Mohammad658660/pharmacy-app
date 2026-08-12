@@ -67,10 +67,14 @@ class ReceiptScannerController extends Controller
                 ]
             ]);
 
-            if ($response->failed()) {
-                Log::error('Gemini API Error: ' . $response->body());
-                return response()->json(['error' => 'حدث خطأ أثناء التواصل مع سيرفر التحليل.'], 500);
-            }
+          if ($response->failed()) {
+    $errorBody = $response->json();
+    $errorMessage = $errorBody['error']['message'] ?? $response->body();
+    
+    return response()->json([
+        'error' => 'خطأ من Gemini: ' . $errorMessage
+    ], 500);
+}
 
             // 4. معالجة النتيجة وإرجاعها للواجهة
             $result = $response->json();
