@@ -114,7 +114,7 @@
                     <span>نظام إدارة الصيدلية والعيادة</span>
                 </div>
                 <div>
-                    <a href="{{ route('home') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-lg">
+                    <a href="{{ route('home.menu') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2 rounded-xl text-sm font-bold transition flex items-center gap-2 shadow-lg">
                         <span>🏠</span> الواجهة الرئيسية
                     </a>
                 </div>

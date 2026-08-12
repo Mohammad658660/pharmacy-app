@@ -79,29 +79,48 @@
 
     <div class="max-w-7xl mx-auto w-full space-y-8">
 
-        <!-- الهيدر الرئيسي -->
-        <header class="flex items-center justify-between border-b border-slate-800 pb-6">
-            <div>
-                <h1 class="text-3xl font-bold text-slate-100 flex items-center gap-2">
-                    <span>💊</span> نظام إدارة الصيدلية والعيادة
-                </h1>
-                <p class="text-slate-400 text-sm mt-1">القسم الذي تريد الانتقال إليه</p>
-            </div>
+     <!-- الشريط العلوي (الهيدر) -->
+<header class="bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 py-3 px-6 flex items-center justify-between">
+    
+    <!-- اسم النظام والعنوان -->
+    <div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-white">
+        <span>💊</span>
+        <span>نظام إدارة الصيدلية والعيادة</span>
+    </div>
 
-            <!-- توقيت النظام + زر تسجيل الخروج -->
-            <div class="flex items-center gap-6">
-                <div class="text-left text-xs text-slate-500">
-                    <p>توقيت النظام: Asia/Baghdad</p>
-                </div>
+    <!-- أزرار التحكم بالمظهر والأزرار العامة -->
+    <div class="flex items-center gap-4">
 
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="bg-rose-600/10 hover:bg-rose-600/20 text-rose-400 text-sm font-semibold px-4 py-2 rounded-xl transition-all border border-rose-500/20">
-                        <span>🚪</span> تسجيل الخروج
-                    </button>
-                </form>
-            </div>
-        </header>
+        <!-- أزرار تبديل الثيم (فاتح / تلقائي / داكن) -->
+        <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1 border border-slate-200 dark:border-slate-700">
+            <button id="theme-light-btn" onclick="setTheme('light')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                🌞 فاتح
+            </button>
+            <button id="theme-auto-btn" onclick="setTheme('auto')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                ⏰ تلقائي
+            </button>
+            <button id="theme-dark-btn" onclick="setTheme('dark')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                🌙 داكن
+            </button>
+        </div>
+
+        <!-- زر لوحة الإحصائيات وتسجيل الخروج -->
+        <div class="flex items-center gap-2">
+            <a href="{{ route('dashboard') }}" class="bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 border border-slate-700 dark:border-slate-600">
+                📊 لوحة الإحصائيات
+            </a>
+
+            <form action="{{ route('logout') }}" method="POST" class="inline">
+                @csrf
+                <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 border border-rose-500/20">
+                    🚪 تسجيل الخروج
+                </button>
+            </form>
+        </div>
+
+    </div>
+
+</header>
 
         <!-- شبكة الكروت والمربعات الكبيرة لكافة أجزاء النظام -->
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

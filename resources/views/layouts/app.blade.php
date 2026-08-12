@@ -11,33 +11,31 @@
         tailwind.config = {
             darkMode: 'class',
         }
-        <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
     </script>
+    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
 
-    <!-- سكربت الفحص السريع لمنع وميض الشاشة عند التنقل -->
-   <!-- سكربت الفحص السريع لمنع وميض الشاشة عند التنقل -->
-<script>
-    (function() {
-        const savedTheme = localStorage.getItem('app_theme') || 'auto';
-        let isDark = false;
+    <!-- سكريبت الفحص السريع لمنع وميض الشاشة عند التنقل -->
+    <script>
+        (function() {
+            const savedTheme = localStorage.getItem('app_theme') || 'auto';
+            let isDark = false;
 
-        if (savedTheme === 'dark') {
-            isDark = true;
-        } else if (savedTheme === 'light') {
-            isDark = false;
-        } else if (savedTheme === 'auto') {
-            // التلقائي حسب الوقت: من 6 صباحاً (6) إلى قبل 6 مساءً (18) يكون فاتح، عدا ذلك يكون داكن
-            const currentHour = new Date().getHours();
-            isDark = (currentHour < 6 || currentHour >= 18);
-        }
+            if (savedTheme === 'dark') {
+                isDark = true;
+            } else if (savedTheme === 'light') {
+                isDark = false;
+            } else if (savedTheme === 'auto') {
+                const currentHour = new Date().getHours();
+                isDark = (currentHour < 6 || currentHour >= 18);
+            }
 
-        if (isDark) {
-            document.documentElement.classList.add('dark');
-        } else {
-            document.documentElement.classList.remove('dark');
-        }
-    })();
-</script>
+            if (isDark) {
+                document.documentElement.classList.add('dark');
+            } else {
+                document.documentElement.classList.remove('dark');
+            }
+        })();
+    </script>
 
     <style>
         html {
@@ -52,51 +50,60 @@
 </head>
 
 <body class="min-h-screen flex flex-col bg-slate-100 text-slate-800 dark:bg-slate-950 dark:text-slate-100">
-
-    <!-- الشريط العلوي (الهيدر) -->
-    <header class="bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 px-6 py-4 flex justify-between items-center shadow-sm">
+<!-- الشريط العلوي (الهيدر) -->
+    <header class="bg-white border-b border-slate-200 dark:bg-slate-900 dark:border-slate-800 py-3 px-6 flex items-center justify-between">
         
         <!-- اسم النظام والعنوان -->
-        <div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-slate-100">
+        <div class="flex items-center gap-2 text-xl font-bold text-slate-800 dark:text-white">
             <span>💊</span>
             <span>نظام إدارة الصيدلية والعيادة</span>
         </div>
 
         <!-- أزرار التحكم بالمظهر والأزرار العامة -->
         <div class="flex items-center gap-4">
-            
-            <!-- أزرار تبديل الثيم الثلاثية (فاتح / تلقائي / داكن) -->
-            <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl border border-slate-200 dark:border-slate-700">
-                <button id="theme-light-btn" onclick="setTheme('light')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
-                    🌞 فاتح
-                </button>
-                <button id="theme-auto-btn" onclick="setTheme('auto')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
-                    ⏰ تلقائي
-                </button>
-                <button id="theme-dark-btn" onclick="setTheme('dark')" class="px-2.5 py-1 text-xs font-semibold rounded-lg transition text-slate-600 dark:text-slate-300 hover:text-slate-900 dark:hover:text-white flex items-center gap-1">
-                    🌙 داكن
-                </button>
-            </div>
 
-            <!-- أزرار الواجهة الرئيسية وتسجيل الخروج -->
-            <div class="flex items-center gap-2">
-               <a href="{{ route('home.menu') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-bold px-3 py-1.5 rounded-lg flex items-center gap-1">
-    🏡 الواجهة الرئيسية
-</a>
-<a href="{{ route('dashboard') }}" class="bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 text-xs px-3 py-1.5 rounded-lg flex items-center gap-1">
-    📊 لوحة الإحصائيات
-</a>
-                <form action="{{ route('logout') }}" method="POST" class="inline">
-                    @csrf
-                    <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 border border-rose-500/20 text-xs font-bold px-3 py-1.5 rounded-lg transition flex items-center gap-1">
-                        🚪 تسجيل الخروج
+            @if(request()->routeIs('home.menu'))
+                {{-- أزرار تظهر حصراً وفقط في واجهة الكروت الرئيسية (home.menu) --}}
+
+                <!-- أزرار تبديل الثيم -->
+                <div class="flex items-center bg-slate-100 dark:bg-slate-800 p-1 rounded-xl gap-1 border border-slate-200 dark:border-slate-700">
+                    <button id="theme-light-btn" onclick="setTheme('light')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        🌞 فاتح
                     </button>
-                </form>
-            </div>
+                    <button id="theme-auto-btn" onclick="setTheme('auto')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        ⏰ تلقائي
+                    </button>
+                    <button id="theme-dark-btn" onclick="setTheme('dark')" class="px-2.5 py-1 text-xs rounded-lg transition-colors flex items-center gap-1 text-slate-600 dark:text-slate-400 hover:text-slate-900 dark:hover:text-white">
+                        🌙 داكن
+                    </button>
+                </div>
+
+                <!-- زر الإحصائيات وتسجيل الخروج -->
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('dashboard') }}" class="bg-slate-800 hover:bg-slate-700 text-white dark:bg-slate-700 dark:hover:bg-slate-600 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 border border-slate-700 dark:border-slate-600">
+                        📊 لوحة الإحصائيات
+                    </a>
+
+                    <form action="{{ route('logout') }}" method="POST" class="inline">
+                        @csrf
+                        <button type="submit" class="bg-rose-500/10 hover:bg-rose-500/20 text-rose-600 dark:text-rose-400 px-3 py-1.5 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 border border-rose-500/20">
+                            🚪 تسجيل الخروج
+                        </button>
+                    </form>
+                </div>
+
+            @else
+                {{-- يظهر في لوحة الإحصائيات وفي كل الصفحات الفرعية --}}
+                <div class="flex items-center gap-2">
+                    <a href="{{ route('home.menu') }}" class="bg-emerald-600 hover:bg-emerald-500 text-white px-3 py-1.5 rounded-xl text-xs font-medium transition-colors flex items-center gap-1.5 shadow-sm">
+                        🏠 الواجهة الرئيسية
+                    </a>
+                </div>
+            @endif
 
         </div>
-    </header>
 
+    </header>
     <!-- محتوى الصفحات المتغير -->
     <main class="flex-1 p-6">
         @yield('content')
@@ -104,10 +111,10 @@
 
     <!-- الفوتر -->
     <footer class="text-center text-xs text-slate-500 dark:text-slate-400 py-4 border-t border-slate-200 dark:border-slate-800">
-        جميع الحقوق محفوظة &copy; {{ date('Y') }} - نظام إدارة الصيدلية والعيادة
+        نظام إدارة الصيدلية والعيادة - &copy; {{ date('Y') }} جميع الحقوق محفوظة
     </footer>
 
-    <!-- سكربت إدارة الثيم التفاعلي -->
+    <!-- سكريبت إدارة الثيم التفاعلي -->
     <script>
         function applyTheme(theme) {
             let isDark = false;
@@ -147,7 +154,7 @@
             });
         }
 
-        // تشغيل السكربت فور تحميل الصفحة وتحديد الزر النشط
+        // تشغيل السكريبت فور تحميل الصفحة وتحديد الزر النشط
         document.addEventListener('DOMContentLoaded', () => {
             const savedTheme = localStorage.getItem('app_theme') || 'auto';
             applyTheme(savedTheme);
