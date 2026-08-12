@@ -45,7 +45,7 @@ class ReceiptScannerController extends Controller
 }";
 
             // 3. إرسال الطلب إلى Gemini API
-$endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.0-flash:generateContent?key={$apiKey}";            $response = Http::post($endpoint, [
+$endpoint = "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key={$apiKey}";                   $response = Http::post($endpoint, [
                 'contents' => [
                     [
                         'parts' => [
