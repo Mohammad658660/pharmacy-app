@@ -36,6 +36,22 @@
         border-color: #94a3b8 transparent transparent transparent !important;
     }
 </style>
+<div class="mb-6 flex items-center gap-4 bg-slate-800/50 p-4 rounded-2xl border border-slate-700">
+    <label for="receiptInput" class="cursor-pointer bg-indigo-600 hover:bg-indigo-500 text-white px-4 py-2.5 rounded-xl font-bold flex items-center gap-2 shadow-lg transition">
+        <span>📷</span>
+        <span>قراءة الوصل بالذكاء الاصطناعي</span>
+    </label>
+    <input type="file" id="receiptInput" accept="image/*" class="hidden" onchange="uploadAndScanReceipt(this)">
+
+    <!-- مؤشر التحميل (Spinner) -->
+    <div id="aiLoading" class="hidden flex items-center gap-2 text-indigo-400 font-medium">
+        <svg class="animate-spin h-5 w-5 text-indigo-400" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
+            <circle class="opacity-25" cx="12" cy="12" r="10" stroke="currentColor" stroke-width="4"></circle>
+            <path class="opacity-75" fill="currentColor" d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"></path>
+        </svg>
+        <span>جاري قراءة الوصل واستخراج المواد...</span>
+    </div>
+</div>
 
 <div class="container mx-auto p-6 text-white">
     @if(session('success'))
@@ -169,4 +185,45 @@
         });
     });
 </script>
+<!-- سكريبت الذكاء الاصطناعي لقراءة الوصل -->
+    <script>
+    async function uploadAndScanReceipt(input) {
+        if (!input.files || !input.files[0]) return;
+
+        const file = input.files[0];
+        const formData = new FormData();
+        formData.append('receipt', file);
+        formData.append('_token', '{{ csrf_token() }}');
+
+        const loadingElem = document.getElementById('aiLoading');
+        loadingElem.classList.remove('hidden');
+
+        try {
+            const response = await fetch('{{ route("purchases.scan-receipt") }}', {
+                method: 'POST',
+                body: formData,
+                headers: {
+                    'Accept': 'application/json',
+                }
+            });
+
+            const result = await response.json();
+
+            if (result.success && result.data) {
+                console.log('بيانات الوصل المستخرجة:', result.data);
+                alert('تم استخراج بيانات الوصل بنجاح!');
+                
+                // إذا كان عندك دالة إضافة مادة للجدول يتم استدعاؤها هنا
+            } else {
+                alert(result.error || 'لم يتم التعرف على محتوى الوصل.');
+            }
+        } catch (error) {
+            console.error(error);
+            alert('حدث خطأ أثناء الاتصال بالسيرفر.');
+        } finally {
+            loadingElem.classList.add('hidden');
+            input.value = '';
+        }
+    }
+    </script>
 @endsection

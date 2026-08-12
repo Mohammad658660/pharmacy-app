@@ -10,7 +10,9 @@ use App\Http\Controllers\InvoiceController;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\SettingController;
 use App\Http\Controllers\PurchaseController;
+use App\Http\Controllers\ReceiptScannerController;
 
+Route::post('/purchases/scan-receipt', [ReceiptScannerController::class, 'scan'])->name('purchases.scan-receipt');
 // --------------------------------------------------------------------------
 // مسارات تسجيل الدخول والخروج (عامة وبدون حماية)
 // --------------------------------------------------------------------------
